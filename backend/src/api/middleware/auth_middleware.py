@@ -43,4 +43,6 @@ def require_api_key(f):
                 }
             }), 401
 
+        return f(*args, **kwargs)
+
     return decorated_function
