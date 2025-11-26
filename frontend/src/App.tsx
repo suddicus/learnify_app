@@ -13,15 +13,22 @@ import type { Lesson } from './types/lesson'
 // Wrapper components to handle routing logic
 const CourseDetailsWrapper: React.FC<{ courses: Course[]; lessons: Lesson[] }> = ({ courses, lessons }) => {
   const { id } = useParams<{ id: string }>()
+  // if(Number(id) > courses.length){
+  //   alert("Sorry, this course does not exist")
+  // }
   const courseId = id ? Number(id) : 0
-  const course = courses[courseId] || courses[0]
-  return <CourseDetails course={course} lessons={lessons} />
+  const course = courses[courseId - 1] || courses[0]
+
+  // The lessons get filtered here
+  const courseLessons = lessons.filter(lesson => lesson.courseId === courseId)
+
+  return <CourseDetails course={course} lessons={courseLessons} />
 }
 
 const LessonPageWrapper: React.FC<{ lessons: Lesson[] }> = ({ lessons }) => {
   const { id } = useParams<{ id: string }>()
   const lessonId = id ? Number(id) : 0
-  const lesson = lessons[lessonId] || lessons[0]
+  const lesson = lessons[lessonId - 1] || lessons[0]
   return <LessonPage lesson={lesson} />
 }
 
