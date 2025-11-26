@@ -9,15 +9,29 @@ import courses from './dummydata/courses'
 import lessons from './dummydata/lessons'
 import type { Course } from './types/course'
 import type { Lesson } from './types/lesson'
+import { NotFound } from './components/NotFound'
 
 // Wrapper components to handle routing logic
 const CourseDetailsWrapper: React.FC<{ courses: Course[]; lessons: Lesson[] }> = ({ courses, lessons }) => {
   const { id } = useParams<{ id: string }>()
-  // if(Number(id) > courses.length){
-  //   alert("Sorry, this course does not exist")
-  // }
-  const courseId = id ? Number(id) : 0
-  const course = courses[courseId - 1] || courses[0]
+
+  if (!id){
+    return <NotFound
+      message="The course you are looking for doesn't exist or has been removed."
+      redirectTo="/"
+      redirectText="Browse all courses"
+    />
+  }
+  const courseId = Number(id)
+
+  if(isNaN(courseId) || (courseId >= courses.length)){
+    return <NotFound
+    message="The course you are looking for doesn't exist or has been removed."
+    redirectTo="/"
+    redirectText="Browse all courses"
+  />
+  }
+  const course = courses[courseId - 1]
 
   // The lessons get filtered here
   const courseLessons = lessons.filter(lesson => lesson.courseId === courseId)
@@ -27,8 +41,25 @@ const CourseDetailsWrapper: React.FC<{ courses: Course[]; lessons: Lesson[] }> =
 
 const LessonPageWrapper: React.FC<{ lessons: Lesson[] }> = ({ lessons }) => {
   const { id } = useParams<{ id: string }>()
-  const lessonId = id ? Number(id) : 0
-  const lesson = lessons[lessonId - 1] || lessons[0]
+
+  if (!id){
+    return <NotFound
+      message="The lesson you are looking for doesn't exist or has been removed."
+      redirectTo="/"
+      redirectText="Browse all courses"
+    />
+  }
+  const lessonId = Number(id)
+
+  if(isNaN(lessonId) || (lessonId >= lessons.length)){
+    return <NotFound
+    message="The lesson you are looking for doesn't exist or has been removed."
+    redirectTo="/"
+    redirectText="Browse all courses"
+  />
+  }
+
+  const lesson = lessons[lessonId - 1]
   return <LessonPage lesson={lesson} />
 }
 
@@ -48,6 +79,13 @@ export default function App() {
             <Route
               path="/lessons/:id"
               element={<LessonPageWrapper lessons={lessons} />}
+            />
+
+            <Route
+              path="*"
+              element={
+                <NotFound />
+              }
             />
         </Routes>
       </main>
